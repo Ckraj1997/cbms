@@ -1,0 +1,82 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Page Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+          <h4 class="fw-bold text-dark mb-1">My Accounts</h4>
+          <p class="text-muted small mb-0">Manage your active and pending accounts.</p>
+        </div>
+        <a class="btn btn-primary rounded-pill fw-bold shadow-sm px-4" th:href="@{/accounts/create}">
+          <i class="bi bi-plus-lg me-1"></i> Open Account
+        </a>
+      </div>
+
+      <div class="row g-4">
+        
+        <!-- Account Cards Loop -->
+        <div class="col-md-6 col-xl-4" th:each="acc : ${accounts}">
+          <div class="card border-0 shadow-sm rounded-4 hover-scale h-100" style="cursor: pointer" th:onclick="|window.location='/accounts/${acc.id}'|">
+            <div class="card-body p-4">
+              
+              <!-- Top Row: Icon, Details, and Badge -->
+              <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="d-flex align-items-center">
+                  <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                    <i class="bi bi-wallet2 fs-5"></i>
+                  </div>
+                  <div>
+                    <p class="text-muted small fw-bold text-uppercase mb-0" th:text="${acc.accountType}"></p>
+                    <h6 class="fw-bold text-dark font-monospace mb-0" th:text="${acc.accountNumber}"></h6>
+                  </div>
+                </div>
+                
+                <!-- Premium Status Badge -->
+                <span class="badge rounded-pill fw-semibold px-3 py-2" 
+                      th:classappend="${acc.status == 'ACTIVE'} ? 'bg-success bg-opacity-10 text-success' : (${acc.status == 'PENDING'} ? 'bg-warning bg-opacity-10 text-warning-emphasis' : 'bg-danger bg-opacity-10 text-danger')" 
+                      th:text="${acc.status}">
+                </span>
+              </div>
+
+              <!-- Bottom Row: Balance -->
+              <div class="mt-2 pt-3 border-top">
+                <p class="text-muted small fw-semibold text-uppercase mb-1">Available Balance</p>
+                <h3 class="fw-bold text-dark mb-0">₹ <span th:text="${#numbers.formatDecimal(acc.balance, 1, 'COMMA', 2, 'POINT')}"></span></h3>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State (Shows if the user has no accounts) -->
+        <div class="col-12" th:if="${#lists.isEmpty(accounts)}">
+          <div class="card border-0 shadow-sm rounded-4 text-center p-5">
+            <div class="card-body py-5">
+              <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                <i class="bi bi-inbox display-5 text-secondary opacity-50"></i>
+              </div>
+              <h5 class="fw-bold text-dark">No Accounts Found</h5>
+              <p class="text-muted mb-4">You do not currently have any banking accounts. Open a new one to get started.</p>
+              <a class="btn btn-primary rounded-pill fw-medium px-4" th:href="@{/accounts/create}">Open New Account</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

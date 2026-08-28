@@ -1,0 +1,135 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Page Header -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-3 mb-md-0">
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-check2-circle text-primary me-2"></i> Pending Approvals Hub
+          </h4>
+          <p class="text-muted small mb-0">Centralized queue for reviewing and authorizing pending system requests.</p>
+        </div>
+      </div>
+
+      <!-- Approvals Grid Cards -->
+      <div class="row g-4">
+        
+        <!-- New Accounts -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-info">
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold text-dark mb-0">New Accounts</h5>
+                  <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3 py-1 fw-bold" th:text="${cntAccounts}">0</span>
+                </div>
+                <p class="text-muted small mb-4">
+                  Review and authorize new customer account opening applications.
+                </p>
+              </div>
+              <a class="btn btn-outline-info rounded-pill fw-medium w-100 shadow-sm py-2" th:href="@{/manager/accounts}">
+                <i class="bi bi-arrow-right-short me-1"></i> Review Accounts
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loan Applications -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-warning">
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold text-dark mb-0">Loan Applications</h5>
+                  <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-25 rounded-pill px-3 py-1 fw-bold" th:text="${cntLoans}">0</span>
+                </div>
+                <p class="text-muted small mb-4">
+                  Evaluate risk profiles and sanction pending loan requests.
+                </p>
+              </div>
+              <a class="btn btn-outline-warning text-dark border rounded-pill fw-medium w-100 shadow-sm py-2" th:href="@{/manager/loans}">
+                <i class="bi bi-arrow-right-short me-1"></i> Review Loans
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- KYC Documents -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-primary">
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold text-dark mb-0">KYC Documents</h5>
+                  <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-1 fw-bold" th:text="${cntKyc}">0</span>
+                </div>
+                <p class="text-muted small mb-4">
+                  Verify customer-uploaded identity proofs and address documents.
+                </p>
+              </div>
+              <a class="btn btn-outline-primary rounded-pill fw-medium w-100 shadow-sm py-2" th:href="@{/manager/kyc}">
+                <i class="bi bi-arrow-right-short me-1"></i> Review KYC
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Requests -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-secondary">
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold text-dark mb-0">Service Requests</h5>
+                  <span class="badge bg-secondary bg-opacity-10 text-secondary-emphasis border border-secondary border-opacity-25 rounded-pill px-3 py-1 fw-bold" th:text="${cntCheques}">0</span>
+                </div>
+                <p class="text-muted small mb-4">
+                  Authorize customer requests for cheque books and debit card dispatches.
+                </p>
+              </div>
+              <a class="btn btn-outline-secondary rounded-pill fw-medium w-100 shadow-sm py-2" th:href="@{/manager/services}">
+                <i class="bi bi-arrow-right-short me-1"></i> Review Requests
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beneficiaries -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 border-start border-4 border-success">
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold text-dark mb-0">Beneficiaries</h5>
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-1 fw-bold" th:text="${cntBeneficiaries}">0</span>
+                </div>
+                <p class="text-muted small mb-4">
+                  Approve newly added external payees for fund transfers.
+                </p>
+              </div>
+              <a class="btn btn-outline-success rounded-pill fw-medium w-100 shadow-sm py-2" th:href="@{/manager/beneficiaries}">
+                <i class="bi bi-arrow-right-short me-1"></i> Review Beneficiaries
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

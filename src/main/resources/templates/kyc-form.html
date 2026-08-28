@@ -1,0 +1,119 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <!-- Centered Focus Layout -->
+  <div class="main-content d-flex flex-column align-items-center justify-content-center py-4" style="min-height: calc(100vh - 64px);">
+    <div class="container" style="max-width: 600px">
+      
+      <!-- Error Alert -->
+      <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4" th:if="${error}">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+
+      <!-- Premium KYC Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        
+        <!-- Subtle gradient accent bar -->
+        <div style="height: 6px; background: var(--brand-gradient);"></div>
+        
+        <div class="card-body p-4 p-md-5">
+          
+          <!-- Icon Header -->
+          <div class="text-center mb-4 pb-2">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+              <i class="bi bi-person-badge fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">KYC Verification</h4>
+            <p class="text-muted small">Upload your government-issued identity proof to unlock full banking features.</p>
+          </div>
+
+          <form enctype="multipart/form-data" method="post" th:action="@{/kyc/upload}">
+            
+            <!-- Document Type -->
+            <div class="mb-4">
+              <label class="form-label text-muted fw-semibold small text-uppercase">Document Type</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-file-earmark-text"></i></span>
+                <select class="form-select bg-light border-0 shadow-none ps-2" name="docType" required>
+                  <option disabled selected value="">-- Select Identity Document --</option>
+                  <option value="AADHAR">Aadhar Card</option>
+                  <option value="PAN">PAN Card</option>
+                  <option value="VOTER_ID">Voter ID</option>
+                  <option value="PASSPORT">Passport</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Document Number -->
+            <div class="mb-4">
+              <label class="form-label text-muted fw-semibold small text-uppercase">Document Number</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-hash"></i></span>
+                <input class="form-control bg-light border-0 shadow-none ps-2 font-monospace text-dark" name="docNumber" placeholder="e.g., ABCD1234F" required type="text" />
+              </div>
+            </div>
+
+            <!-- File Upload -->
+            <div class="mb-4">
+              <label class="form-label text-muted fw-semibold small text-uppercase">Upload Document (Image / PDF)</label>
+              <input accept=".jpg, .jpeg, .png, .pdf" class="form-control bg-light border-0 py-3 shadow-none" id="fileInput" name="file" onchange="validateSize()" required type="file" />
+              <div class="form-text small text-muted mt-2">
+                <i class="bi bi-info-circle me-1"></i> Max size: 2MB. Accepted formats: JPG, PNG, PDF.
+              </div>
+              <div class="text-danger small mt-2 fw-medium bg-danger bg-opacity-10 p-2 rounded-3" id="fileError" style="display: none">
+                <i class="bi bi-exclamation-circle me-1"></i> File is too large! Please select a file under 2MB.
+              </div>
+            </div>
+
+            <!-- Submit Action -->
+            <button class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm mt-3" id="submitBtn" type="submit">
+              Submit for Verification <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+            
+          </form>
+        </div>
+      </div>
+
+      <!-- Security Footer Notice -->
+      <div class="text-center mt-4 text-muted small fw-medium">
+        <i class="bi bi-shield-lock-fill text-success me-1"></i> Your data is encrypted and stored securely under strict compliance standards.
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Real-time File Size Validator -->
+  <script>
+    function validateSize() {
+      const fileInput = document.getElementById("fileInput");
+      const errorDiv = document.getElementById("fileError");
+      const submitBtn = document.getElementById("submitBtn");
+
+      if (fileInput.files.length > 0) {
+        const fileSize = fileInput.files[0].size / 1024 / 1024; // size in MB
+
+        if (fileSize > 2) {
+          errorDiv.style.display = "block";
+          submitBtn.disabled = true;
+          fileInput.classList.add("is-invalid");
+        } else {
+          errorDiv.style.display = "none";
+          submitBtn.disabled = false;
+          fileInput.classList.remove("is-invalid");
+        }
+      }
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

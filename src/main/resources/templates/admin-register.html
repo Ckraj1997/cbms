@@ -1,0 +1,193 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4" style="max-width: 800px;">
+      
+      <!-- Page Header -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-3 mb-md-0">
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-person-plus text-primary me-2"></i> Register New User
+          </h4>
+          <p class="text-muted small mb-0">Onboard a new system user and assign role permissions.</p>
+        </div>
+        <a class="btn btn-light border rounded-pill fw-medium shadow-sm px-4 text-dark" th:href="@{/admin/users}">
+          <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+      </div>
+
+      <!-- Registration Form Card -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <!-- Subtle gradient accent bar -->
+        <div style="height: 6px; background: var(--brand-gradient);"></div>
+        
+        <div class="card-body p-4 p-md-5">
+          <form method="post" th:action="@{/admin/register}" th:object="${user}">
+            
+            <div class="row g-4">
+              <!-- Username -->
+              <div class="col-md-6">
+                <label class="form-label text-muted fw-semibold small text-uppercase">Username</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-person"></i></span>
+                  <input class="form-control bg-light border-0 shadow-none ps-2" id="adminUsernameInput" placeholder="Choose username" required th:field="*{username}" type="text" />
+                </div>
+                <small id="adminUsernameFeedback" class="form-text mt-1 d-block"></small>
+              </div>
+
+              <!-- Email -->
+              <div class="col-md-6">
+                <label class="form-label text-muted fw-semibold small text-uppercase">Email Address</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-envelope"></i></span>
+                  <input class="form-control bg-light border-0 shadow-none ps-2" id="adminEmailInput" placeholder="name@example.com" required th:field="*{email}" type="email" />
+                </div>
+                <small id="adminEmailFeedback" class="form-text mt-1 d-block"></small>
+              </div>
+
+              <!-- Password -->
+              <div class="col-md-6">
+                <label class="form-label text-muted fw-semibold small text-uppercase">Temporary Password</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-key"></i></span>
+                  <input class="form-control bg-light border-0 shadow-none ps-2" placeholder="••••••••" required th:field="*{password}" type="password" />
+                </div>
+              </div>
+
+              <!-- Role Selection -->
+              <div class="col-md-6">
+                <label class="form-label text-muted fw-semibold small text-uppercase">System Role</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-shield-lock"></i></span>
+                  <select class="form-select bg-light border-0 shadow-none ps-2" required th:field="*{role}">
+                    <option disabled selected value="">-- Select a Role --</option>
+                    <option th:each="r : ${roles}" th:text="${r}" th:value="${r}"></option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid mt-5">
+              <button class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm" type="submit">
+                Create User Account <i class="bi bi-check2-circle ms-2"></i>
+              </button>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const doneTypingInterval = 500; // 0.5 seconds debounce
+
+        // --- Username Logic ---
+        const usernameInput = document.getElementById('adminUsernameInput');
+        const usernameFeedback = document.getElementById('adminUsernameFeedback');
+        let usernameTimer;
+
+        usernameInput.addEventListener('input', function() {
+            clearTimeout(usernameTimer);
+            const username = usernameInput.value.trim();
+
+            if (username.length < 3) {
+                usernameFeedback.textContent = 'Username must be at least 3 characters.';
+                usernameFeedback.className = 'form-text text-muted mt-1 d-block';
+                usernameInput.classList.remove('is-valid', 'is-invalid');
+                return;
+            }
+
+            usernameFeedback.textContent = 'Checking availability...';
+            usernameFeedback.className = 'form-text text-info mt-1 d-block';
+
+            usernameTimer = setTimeout(() => {
+                fetch(`/admin/api/check-username?username=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            usernameFeedback.textContent = 'Username is available!';
+                            usernameFeedback.className = 'form-text text-success mt-1 fw-bold d-block';
+                            usernameInput.classList.remove('is-invalid');
+                            usernameInput.classList.add('is-valid');
+                        } else {
+                            usernameFeedback.textContent = 'Username is already taken.';
+                            usernameFeedback.className = 'form-text text-danger mt-1 fw-bold d-block';
+                            usernameInput.classList.remove('is-valid');
+                            usernameInput.classList.add('is-invalid');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        usernameFeedback.textContent = 'Error checking availability.';
+                        usernameFeedback.className = 'form-text text-danger mt-1 d-block';
+                    });
+            }, doneTypingInterval);
+        });
+
+        // --- Email Logic ---
+        const emailInput = document.getElementById('adminEmailInput');
+        const emailFeedback = document.getElementById('adminEmailFeedback');
+        let emailTimer;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        emailInput.addEventListener('input', function() {
+            clearTimeout(emailTimer);
+            const email = emailInput.value.trim();
+
+            if (email.length === 0) {
+                emailFeedback.textContent = '';
+                emailInput.classList.remove('is-valid', 'is-invalid');
+                return;
+            }
+
+            if (!emailRegex.test(email)) {
+                emailFeedback.textContent = 'Please enter a valid email format.';
+                emailFeedback.className = 'form-text text-muted mt-1 d-block';
+                emailInput.classList.remove('is-valid');
+                emailInput.classList.add('is-invalid');
+                return;
+            }
+
+            emailFeedback.textContent = 'Checking availability...';
+            emailFeedback.className = 'form-text text-info mt-1 d-block';
+
+            emailTimer = setTimeout(() => {
+                fetch(`/admin/api/check-email?email=${encodeURIComponent(email)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            emailFeedback.textContent = 'Email is available!';
+                            emailFeedback.className = 'form-text text-success mt-1 fw-bold d-block';
+                            emailInput.classList.remove('is-invalid');
+                            emailInput.classList.add('is-valid');
+                        } else {
+                            emailFeedback.textContent = 'This email is already registered.';
+                            emailFeedback.className = 'form-text text-danger mt-1 fw-bold d-block';
+                            emailInput.classList.remove('is-valid');
+                            emailInput.classList.add('is-invalid');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        emailFeedback.textContent = 'Error checking availability.';
+                        emailFeedback.className = 'form-text text-danger mt-1 d-block';
+                    });
+            }, doneTypingInterval);
+        });
+    });
+  </script>
+</body>
+
+</html>

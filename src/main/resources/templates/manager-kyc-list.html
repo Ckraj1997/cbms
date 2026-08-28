@@ -1,0 +1,120 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Alerts for Success/Error Actions -->
+      <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${success}">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+      <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${error}">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+
+      <!-- Page Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-shield-check text-primary me-2"></i> KYC Verification Management
+          </h4>
+          <p class="text-muted small mb-0">Review customer identity documents and authorize verification statuses.</p>
+        </div>
+      </div>
+
+      <!-- Data Table Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Doc ID</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Customer User</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Document Type</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Reference No.</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Proof File</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody class="border-top-0">
+                
+                <!-- KYC Row -->
+                <tr th:each="doc : ${kycList}">
+                  <td class="px-4 py-3 text-muted font-monospace small" th:text="${'#' + doc.id}">#1</td>
+                  
+                  <td class="px-4 py-3">
+                    <div class="d-flex align-items-center">
+                      <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                        <i class="bi bi-person-fill"></i>
+                      </div>
+                      <span class="fw-bold text-dark" th:text="${doc.user.username}">Username</span>
+                    </div>
+                  </td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary-emphasis border border-secondary border-opacity-25 rounded-pill px-3 py-1 fw-semibold" th:text="${doc.documentType}">
+                      PAN
+                    </span>
+                  </td>
+                  
+                  <td class="px-4 py-3 font-monospace text-muted" th:text="${doc.documentNumber}">ABC1234F</td>
+                  
+                  <td class="px-4 py-3">
+                    <a class="btn btn-sm btn-light text-primary border rounded-pill px-3 shadow-sm fw-medium" target="_blank" th:href="@{'/uploads/kyc-documents/' + ${doc.fileName}}">
+                      <i class="bi bi-eye me-1"></i> View File
+                    </a>
+                  </td>
+                  
+                  <td class="px-4 py-3 text-end">
+                    <div class="d-flex gap-2 justify-content-end">
+                      <form method="post" th:action="@{/manager/kyc/approve}" class="m-0">
+                        <input name="id" th:value="${doc.id}" type="hidden" />
+                        <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="return confirm('Confirm document verification?');" type="submit">
+                          <i class="bi bi-check-lg me-1"></i> Verify
+                        </button>
+                      </form>
+
+                      <form method="post" th:action="@{/manager/kyc/reject}" class="m-0">
+                        <input name="id" th:value="${doc.id}" type="hidden" />
+                        <button class="btn btn-light text-danger border btn-sm rounded-pill px-3 fw-medium shadow-sm" onclick="return confirm('Reject this document?');" type="submit">
+                          <i class="bi bi-x-lg me-1"></i> Reject
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr th:if="${#lists.isEmpty(kycList)}">
+                  <td colspan="6" class="text-center py-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                      <i class="bi bi-shield-check display-5 text-success opacity-75"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">All Clear!</h5>
+                    <p class="text-muted mb-0">There are no pending KYC documents requiring your review.</p>
+                  </td>
+                </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

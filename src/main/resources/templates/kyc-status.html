@@ -1,0 +1,89 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <!-- Centered Focus Layout -->
+  <div class="main-content d-flex flex-column align-items-center justify-content-center py-4" style="min-height: calc(100vh - 64px);">
+    <div class="container" style="max-width: 550px">
+      
+      <!-- Premium Status Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        
+        <!-- Subtle gradient accent bar -->
+        <div style="height: 6px; background: var(--brand-gradient);"></div>
+        
+        <div class="card-body p-4 p-md-5 text-center">
+          
+          <!-- Dynamic Status Icon -->
+          <div class="mb-4">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                 style="width: 80px; height: 80px;"
+                 th:classappend="${kyc.status == 'VERIFIED'} ? 'bg-success bg-opacity-10 text-success' : (${kyc.status == 'PENDING'} ? 'bg-warning bg-opacity-10 text-warning' : 'bg-danger bg-opacity-10 text-danger')">
+              <i class="bi bi-hourglass-split fs-1" th:if="${kyc.status == 'PENDING'}"></i>
+              <i class="bi bi-check-circle-fill fs-1" th:if="${kyc.status == 'VERIFIED'}"></i>
+              <i class="bi bi-x-circle-fill fs-1" th:if="${kyc.status == 'REJECTED'}"></i>
+            </div>
+          </div>
+
+          <!-- Status Title -->
+          <p class="text-muted small fw-semibold text-uppercase mb-1">Verification Status</p>
+          <h3 class="fw-bold text-dark mb-3">
+            <span th:text="${kyc.status}">PENDING</span>
+          </h3>
+
+          <!-- Status Description -->
+          <p class="text-muted small mb-4 px-2">
+            <span th:if="${kyc.status == 'PENDING'}">
+              Your identity document (<strong class="text-dark" th:text="${kyc.documentType}">AADHAR</strong>) has been received and is currently under review by our compliance team.
+            </span>
+            <span th:if="${kyc.status == 'VERIFIED'}">
+              Congratulations! Your identity has been successfully verified. You now have full access to all banking features.
+            </span>
+            <span th:if="${kyc.status == 'REJECTED'}">
+              Unfortunately, your document was rejected. Please contact support or submit a new verification request.
+            </span>
+          </p>
+
+          <hr class="text-muted opacity-25 my-4" />
+
+          <!-- Details Grid Box -->
+          <div class="bg-light rounded-4 p-4 mb-4 border border-light text-start shadow-sm">
+            <div class="row g-3">
+              <div class="col-6">
+                <p class="text-muted small fw-semibold text-uppercase mb-1">Document Type</p>
+                <span class="badge bg-secondary bg-opacity-10 text-secondary-emphasis border border-secondary border-opacity-25 rounded-pill px-3 py-1 fw-semibold" th:text="${kyc.documentType}">
+                  AADHAR
+                </span>
+              </div>
+              <div class="col-6 text-end">
+                <p class="text-muted small fw-semibold text-uppercase mb-1">Uploaded On</p>
+                <span class="text-dark fw-medium small" th:text="${#temporals.format(kyc.uploadDate, 'dd MMM yyyy')}">01 Jan 2026</span>
+              </div>
+              <div class="col-12 mt-3 pt-3 border-top">
+                <p class="text-muted small fw-semibold text-uppercase mb-1">Document Reference No.</p>
+                <span class="font-monospace text-dark fw-bold" th:text="${kyc.documentNumber}">[Redacted]</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <a class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm" th:href="@{/dashboard}">
+            <i class="bi bi-arrow-left me-2"></i> Return to Dashboard
+          </a>
+
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

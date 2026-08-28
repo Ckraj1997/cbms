@@ -1,0 +1,127 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Alert Messages -->
+      <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${error}">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+
+      <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${success}">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+
+      <!-- Page Header & Action Buttons -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-3 mb-md-0">
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-cash-stack text-primary me-2"></i> My Loans
+          </h4>
+          <p class="text-muted small mb-0">Track your active loan applications, interest rates, and monthly EMIs.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <a class="btn btn-light border rounded-pill fw-medium shadow-sm px-4 text-dark" th:href="@{/loans/emi}">
+            <i class="bi bi-calculator me-1"></i> EMI Calculator
+          </a>
+          <a class="btn btn-primary rounded-pill fw-bold shadow-sm px-4" th:href="@{/loans/apply}">
+            <i class="bi bi-plus-lg me-1"></i> Apply for Loan
+          </a>
+        </div>
+      </div>
+
+      <!-- Data Table Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">ID</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Loan Type</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Amount</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Tenure</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Interest Rate</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Status</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Applied Date</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase text-end">Monthly EMI</th>
+                </tr>
+              </thead>
+              <tbody class="border-top-0">
+                
+                <!-- Loan Row -->
+                <tr th:each="loan : ${loans}">
+                  <td class="px-4 py-3 text-muted font-monospace small" th:text="${'#' + loan.id}">#1</td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="badge bg-light text-secondary border px-3 py-2 fw-medium rounded-pill" th:text="${loan.loanType}">
+                      PERSONAL
+                    </span>
+                  </td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="fw-bold text-dark">₹ <span th:text="${#numbers.formatDecimal(loan.amount, 1, 'COMMA', 2, 'POINT')}">0.00</span></span>
+                  </td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="text-muted fw-medium"><span th:text="${loan.tenureMonths}"></span> Mos</span>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><span th:text="${loan.interestRate}"></span>%</span>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill fw-semibold px-3 py-2" 
+                          th:classappend="${loan.status == 'APPROVED'} ? 'bg-success bg-opacity-10 text-success' : (${loan.status == 'PENDING'} ? 'bg-warning bg-opacity-10 text-warning-emphasis' : 'bg-danger bg-opacity-10 text-danger')" 
+                          th:text="${loan.status}">
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <span class="text-muted small fw-medium" th:text="${#temporals.format(loan.appliedDate,'dd MMM yyyy')}">Date</span>
+                  </td>
+                  
+                  <td class="px-4 py-3 text-end">
+                    <span class="fw-bold text-primary font-monospace" th:if="${loan.status == 'APPROVED'}">
+                      ₹ <span th:text="${#numbers.formatDecimal(loan.emi, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                    </span>
+                    <span class="text-muted" th:if="${loan.status != 'APPROVED'}">—</span>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr th:if="${#lists.isEmpty(loans)}">
+                  <td colspan="8" class="text-center py-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                      <i class="bi bi-cash-stack display-5 text-secondary opacity-50"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Loan Applications</h5>
+                    <p class="text-muted mb-4">You haven't applied for any loans yet. Check out our EMI calculator or submit a new application.</p>
+                    <a class="btn btn-primary rounded-pill fw-medium px-4 shadow-sm" th:href="@{/loans/apply}">Apply for Loan</a>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

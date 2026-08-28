@@ -1,0 +1,95 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}">
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <!-- Centered Focus Layout -->
+  <div class="main-content d-flex flex-column align-items-center justify-content-center py-4" style="min-height: calc(100vh - 64px);">
+    <div class="container" style="max-width: 600px">
+      
+      <!-- Premium Statement Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        
+        <!-- Subtle gradient accent bar -->
+        <div style="height: 6px; background: var(--brand-gradient);"></div>
+        
+        <div class="card-body p-4 p-md-5">
+          
+          <!-- Icon Header -->
+          <div class="text-center mb-4 pb-2">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+              <i class="bi bi-file-earmark-text fs-2"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">Account Statement</h4>
+            <p class="text-muted small">Select an account and date range to export your transaction history.</p>
+          </div>
+
+          <form method="post" th:action="@{/reports/statement}">
+            
+            <!-- Account Selection -->
+            <div class="mb-4">
+              <label class="form-label text-muted fw-semibold small text-uppercase">Source Account</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-wallet2"></i></span>
+                <select class="form-select bg-light border-0 shadow-none ps-2 font-monospace" name="accountNumber" required>
+                  <option disabled selected th:if="${#lists.isEmpty(accounts)}" value="">No active account found</option>
+                  <option disabled selected th:if="${!#lists.isEmpty(accounts)}" value="">-- Select Account --</option>
+                  <option th:each="acc : ${accounts}" th:selected="${acc.id == selectedAccountId}" th:text="${acc.accountNumber}" th:value="${acc.accountNumber}"></option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Date Range -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-muted fw-semibold small text-uppercase">From Date</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-calendar-event"></i></span>
+                  <input class="form-control bg-light border-0 shadow-none ps-2" name="fromDate" required type="date" />
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-muted fw-semibold small text-uppercase">To Date</label>
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-light border-0 text-muted"><i class="bi bi-calendar-check"></i></span>
+                  <input class="form-control bg-light border-0 shadow-none ps-2" name="toDate" required type="date" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Info Callout Box -->
+            <div class="bg-light rounded-4 p-3 mb-4 border border-light shadow-sm d-flex align-items-center">
+              <i class="bi bi-info-circle text-primary fs-5 me-3"></i>
+              <span class="text-muted small">Statement will include all debit, credit, and transfer transactions within the selected date range.</span>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+              <a class="btn btn-light border text-dark rounded-pill fw-medium px-4 py-3 shadow-sm flex-fill text-center" th:href="@{/dashboard}">
+                Cancel
+              </a>
+              <button class="btn btn-primary rounded-pill fw-bold px-4 py-3 shadow-sm flex-fill" type="submit">
+                Generate Statement <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

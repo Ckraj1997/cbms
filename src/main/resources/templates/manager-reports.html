@@ -1,0 +1,137 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Page Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-graph-up-arrow text-primary me-2"></i> Branch Performance Reports
+          </h4>
+          <p class="text-muted small mb-0">Monitor real-time branch analytics, liquidity metrics, and export compliance data.</p>
+        </div>
+      </div>
+
+      <!-- Metric Overview Cards -->
+      <div class="row g-4 mb-5">
+        
+        <!-- Total Deposits -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+              <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-arrow-down-left-circle-fill fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted small fw-semibold text-uppercase mb-1">Total Deposits</p>
+                <h4 class="fw-bold text-success mb-0 font-monospace">₹ <span th:text="${totalDeposits}">0</span></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Withdrawals -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+              <div class="bg-warning bg-opacity-10 text-warning-emphasis rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-arrow-up-right-circle-fill fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted small fw-semibold text-uppercase mb-1">Total Withdrawals</p>
+                <h4 class="fw-bold text-dark mb-0 font-monospace">₹ <span th:text="${totalWithdrawals}">0</span></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- New Accounts -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+              <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-person-plus-fill fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted small fw-semibold text-uppercase mb-1">New Accts (Month)</p>
+                <h4 class="fw-bold text-dark mb-0" th:text="${newAccountsThisMonth}">0</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loans Disbursed -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4 d-flex align-items-center">
+              <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                <i class="bi bi-cash-stack fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted small fw-semibold text-uppercase mb-1">Loans Disbursed</p>
+                <h4 class="fw-bold text-dark mb-0" th:text="${loansDisbursed}">0</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Downloadable Reports Section Header -->
+      <h5 class="fw-bold text-dark mb-3 px-1">Downloadable Reports & Statements</h5>
+
+      <!-- Reports Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="list-group list-group-flush">
+          
+          <!-- Report 1 -->
+          <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-4 border-0 border-bottom" th:href="@{/manager/reports/transactions}">
+            <div class="d-flex align-items-center">
+              <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                <i class="bi bi-file-earmark-pdf fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-dark mb-1">Monthly Transaction Statement</h6>
+                <p class="text-muted small mb-0">Export detailed ledger records for all branch transactions in CSV format.</p>
+              </div>
+            </div>
+            <span class="btn btn-light text-primary border rounded-pill px-4 fw-medium shadow-sm">
+              <i class="bi bi-download me-1"></i> Download CSV
+            </span>
+          </a>
+
+          <!-- Report 2 -->
+          <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-4 border-0" th:href="@{/manager/reports/loans}">
+            <div class="d-flex align-items-center">
+              <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                <i class="bi bi-file-earmark-excel fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-dark mb-1">Loan Aging & Portfolio Report</h6>
+                <p class="text-muted small mb-0">Export comprehensive performance and delinquency aging metrics for branch loans.</p>
+              </div>
+            </div>
+            <span class="btn btn-light text-success border rounded-pill px-4 fw-medium shadow-sm">
+              <i class="bi bi-download me-1"></i> Download CSV
+            </span>
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

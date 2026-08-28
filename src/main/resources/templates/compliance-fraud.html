@@ -1,0 +1,137 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Alerts for Success/Error Actions -->
+      <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${success}">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+      <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${error}">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+
+      <!-- Page Header -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-3 mb-md-0">
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-shield-exclamation text-danger me-2"></i> Fraud Enforcement
+          </h4>
+          <p class="text-muted small mb-0">Monitor suspicious activities, flag users, and manage account freezes.</p>
+        </div>
+      </div>
+
+      <!-- Report Suspicious Activity Card -->
+      <div class="card border-0 shadow-sm rounded-4 mb-5 bg-warning bg-opacity-10 border border-warning border-opacity-25">
+        <div class="card-body p-4">
+          <h6 class="fw-bold text-warning-emphasis mb-3 text-uppercase small">
+            <i class="bi bi-flag-fill me-1"></i> Report Suspicious Activity
+          </h6>
+          <form class="row g-3 align-items-center" method="post" th:action="@{/compliance/actions/flag-user}">
+            <div class="col-md-4">
+              <div class="input-group shadow-sm rounded">
+                <span class="input-group-text bg-white border-0 text-muted"><i class="bi bi-person"></i></span>
+                <input class="form-control border-0 py-2" name="username" placeholder="Username / User ID" required type="text" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-group shadow-sm rounded">
+                <span class="input-group-text bg-white border-0 text-muted"><i class="bi bi-card-text"></i></span>
+                <input class="form-control border-0 py-2" name="reason" placeholder="Reason (e.g., suspicious offshore transfers)" required type="text" />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-dark w-100 rounded-pill fw-bold shadow-sm py-2" type="submit">
+                Flag User
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Active Alerts Section Header -->
+      <h5 class="fw-bold text-dark mb-3 px-1">Active Fraud Alerts</h5>
+
+      <!-- Data Table Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Alert ID</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Detected At</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Target User</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Reason / Flags</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase text-end">Enforcement</th>
+                </tr>
+              </thead>
+              <tbody class="border-top-0">
+                
+                <!-- Fraud Alert Row -->
+                <tr th:each="fraud : ${frauds}">
+                  <td class="px-4 py-3 text-muted font-monospace small" th:text="${'#' + fraud.id}">#1</td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="text-muted fw-medium" th:text="${#temporals.format(fraud.detectedAt, 'dd MMM yyyy, HH:mm')}">Date</span>
+                  </td>
+                  
+                  <td class="px-4 py-3">
+                    <div class="d-flex align-items-center">
+                      <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                        <i class="bi bi-person-fill"></i>
+                      </div>
+                      <span class="fw-bold text-dark" th:text="${fraud.username}">User</span>
+                    </div>
+                  </td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="badge bg-light text-danger border px-3 py-2 fw-medium rounded-pill text-wrap text-start" style="max-width: 300px; line-height: 1.4;" th:text="${fraud.reason}">
+                      Reason
+                    </span>
+                  </td>
+                  
+                  <td class="px-4 py-3 text-end">
+                    <form method="post" th:action="@{/compliance/actions/freeze-account}" class="m-0">
+                      <input name="username" th:value="${fraud.username}" type="hidden" />
+                      <button class="btn btn-sm btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm" onclick="return confirm('URGENT: Are you sure you want to FREEZE all accounts for this user?');" type="submit">
+                        <i class="bi bi-snow2 me-1"></i> Freeze User
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr th:if="${#lists.isEmpty(frauds)}">
+                  <td colspan="5" class="text-center py-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                      <i class="bi bi-shield-check display-5 text-success opacity-75"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Active Threats</h5>
+                    <p class="text-muted mb-0">The system has not detected any fraudulent activities. All clear!</p>
+                  </td>
+                </tr>
+                
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

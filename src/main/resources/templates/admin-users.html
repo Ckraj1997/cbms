@@ -1,0 +1,148 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Alerts for Success/Error Actions -->
+      <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${success}">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+      <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" th:if="${error}">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+      </div>
+
+      <!-- Page Header -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-3 mb-md-0">
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-people text-primary me-2"></i> User Management
+          </h4>
+          <p class="text-muted small mb-0">Search, manage, and monitor system users and access levels.</p>
+        </div>
+        <a class="btn btn-primary rounded-pill fw-bold shadow-sm px-4" th:href="@{/admin/register}">
+          <i class="bi bi-person-plus me-1"></i> Register New User
+        </a>
+      </div>
+
+      <!-- Data Table Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        
+        <!-- Integrated Premium Search Bar -->
+        <div class="card-header bg-white border-bottom p-4">
+          <form th:action="@{/admin/users}" method="get" class="m-0 row g-2 align-items-center">
+            <div class="col-md-7 col-lg-5">
+              <div class="input-group input-group-lg border rounded-pill overflow-hidden shadow-sm">
+                <span class="input-group-text bg-white border-0 ps-4 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" th:value="${searchKeyword}" class="form-control border-0 shadow-none px-2 fs-6" placeholder="Search by Username or Email..." autocomplete="off">
+                <button type="submit" class="btn btn-primary px-4 fw-medium fs-6">Search</button>
+              </div>
+            </div>
+            <div class="col-auto" th:if="${searchKeyword != null and !searchKeyword.isEmpty()}">
+              <a th:href="@{/admin/users}" class="btn btn-light border rounded-pill px-4 py-2 shadow-sm fw-medium text-dark">
+                Clear Filters
+              </a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">ID</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">User Profile</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">System Role</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Status</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="border-top-0">
+                
+                <!-- User Row -->
+                <tr th:each="user : ${users}">
+                  <td class="px-4 py-3 text-muted font-monospace small" th:text="${'#' + user.id}">1</td>
+                  
+                  <td class="px-4 py-3">
+                    <div class="d-flex align-items-center">
+                      <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                        <i class="bi bi-person-fill fs-5"></i>
+                      </div>
+                      <div>
+                        <h6 class="fw-bold text-dark mb-0" th:text="${user.username}">JohnDoe</h6>
+                        <small class="text-muted" th:text="${user.email}">john@example.com</small>
+                      </div>
+                    </div>
+                  </td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary-emphasis border border-secondary border-opacity-25 rounded-pill px-3 py-1 fw-semibold" th:text="${user.role}">
+                      USER
+                    </span>
+                  </td>
+                  
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill px-3 py-2 fw-semibold" 
+                          th:classappend="${user.active} ? 'bg-success bg-opacity-10 text-success' : 'bg-danger bg-opacity-10 text-danger'"
+                          th:text="${user.active} ? 'ACTIVE' : 'BLOCKED'">
+                    </span>
+                  </td>
+                  
+                  <td class="px-4 py-3 text-end">
+                    <div class="d-flex gap-2 justify-content-end" th:if="${user.role.name() != 'ADMIN' && user.role.name() != 'SUPER_ADMIN'}">
+                      
+                      <!-- Block Action -->
+                      <a class="btn btn-sm btn-light text-danger border rounded-pill px-3 fw-medium shadow-sm" 
+                         onclick="return confirm('Are you sure you want to BLOCK this user?');" 
+                         th:href="@{'/admin/users/block/' + ${user.id}}" 
+                         th:if="${user.active}">
+                        <i class="bi bi-slash-circle me-1"></i> Block
+                      </a>
+
+                      <!-- Unblock Action -->
+                      <a class="btn btn-sm btn-light text-success border rounded-pill px-3 fw-medium shadow-sm" 
+                         onclick="return confirm('Unblock this user?');"
+                         th:href="@{'/admin/users/unblock/' + ${user.id}}" 
+                         th:if="${!user.active}">
+                        <i class="bi bi-check-circle me-1"></i> Unblock
+                      </a>
+                      
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr th:if="${users.empty}">
+                  <td colspan="5" class="text-center py-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                      <i class="bi bi-search display-5 text-secondary opacity-50"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Users Found</h5>
+                    <p class="text-muted mb-0">No customers or staff match your current search criteria.</p>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

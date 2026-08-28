@@ -1,0 +1,76 @@
+{
+  "account": {
+    "defaultInterestMonths": 12,
+    "accountNumberUuidEndIndex": 8,
+    "defaultBalance": 0.0
+  },
+  "security": {
+    "maxFailedAttempts": 3,
+    "resetFailedAttempts": 0,
+    "failedAttemptIncrement": 1
+  },
+  "transactions": {
+    "defaultPage": 0,
+    "defaultPageSize": 5,
+    "largeTransferLimit": 100000.0,
+    "minimumAmount": 0.0,
+    "recentTransactionsLimit": 5
+  },
+  "interest": {
+    "savingsAnnualRate": 4.0,
+    "monthsPerYear": 12.0,
+    "percentageDivisor": 100.0
+  },
+  "fixedDeposit": {
+    "longTermThresholdMonths": 12,
+    "longTermAnnualRate": 7.5,
+    "shortTermAnnualRate": 5.5,
+    "compoundingPerYear": 4,
+    "percentageDivisor": 100.0,
+    "monthsPerYear": 12.0
+  },
+  "loan": {
+    "monthsPerYear": 12.0,
+    "percentageDivisor": 100.0,
+    "emiRoundingScale": 100.0
+  },
+  "dashboard": {
+    "relationshipAssignedClients": 12,
+    "relationshipTotalAum": 4500000.0,
+    "superAdminActiveSessions": 142,
+    "tellerCashInDrawer": 450000.0,
+    "managerBranchDeposits": 15000000.0,
+    "complianceFlaggedTransactions": 15,
+    "complianceAuditLogCount": 340
+  },
+  "managerReports": {
+    "totalDeposits": 1500000.0,
+    "totalWithdrawals": 450000.0,
+    "newAccountsOffset": 5
+  },
+  "debitCard": {
+    "segmentBase": 1000,
+    "segmentRandomBound": 9000,
+    "cvvBase": 100,
+    "cvvRandomBound": 900,
+    "expiryYears": 5
+  },
+  "systemStats": {
+    "bytesPerKilobyte": 1024,
+    "kilobytesPerMegabyte": 1024,
+    "millisecondsPerMinute": 60000
+  },
+  "pdf": {
+    "titleFontSize": 18,
+    "subtitleFontSize": 14,
+    "normalFontSize": 12,
+    "headerFontSize": 12,
+    "footnoteFontSize": 10,
+    "twoColumnTableColumns": 2,
+    "threeColumnTableColumns": 3,
+    "tableWidthPercentage": 100,
+    "statementColumnWidth": 3,
+    "headerBorderWidth": 1,
+    "cellPadding": 5
+  }
+}

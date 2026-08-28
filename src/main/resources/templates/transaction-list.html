@@ -1,0 +1,167 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Page Header & Quick Actions -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-3 mb-md-0">
+          <h4 class="fw-bold text-dark mb-1">
+            <i class="bi bi-wallet2 text-primary me-2"></i> Transaction History
+          </h4>
+          <p class="text-muted small mb-0">Filter ledger records, execute quick transfers, and export statements.</p>
+        </div>
+        
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-light border text-dark rounded-pill fw-medium shadow-sm px-3" th:href="@{/transactions/new}">
+            <i class="bi bi-plus-circle me-1"></i> Credit / Debit
+          </a>
+          <a class="btn btn-light border text-primary rounded-pill fw-medium shadow-sm px-3" th:href="@{/transactions/transfer}">
+            <i class="bi bi-arrow-left-right me-1"></i> Fund Transfer
+          </a>
+          <a class="btn btn-light border text-success rounded-pill fw-medium shadow-sm px-3" th:href="@{/transactions/export/csv(accountId=${selectedAccountId}, type=${param.type}, fromDate=${param.fromDate}, toDate=${param.toDate})}">
+            <i class="bi bi-file-earmark-excel me-1"></i> Export CSV
+          </a>
+          <a class="btn btn-light border text-danger rounded-pill fw-medium shadow-sm px-3" th:href="@{/transactions/export/pdf(accountId=${selectedAccountId}, type=${param.type}, fromDate=${param.fromDate}, toDate=${param.toDate})}">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+          </a>
+        </div>
+      </div>
+
+      <!-- Filter Controls Card -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+        
+        <!-- Subtle gradient accent bar -->
+        <div style="height: 6px; background: var(--brand-gradient);"></div>
+        
+        <div class="card-body p-4">
+          <form class="row g-3 align-items-end" method="get">
+            
+            <div class="col-md-3">
+              <label class="form-label text-muted fw-semibold small text-uppercase">Account</label>
+              <select class="form-select bg-light border-0 shadow-none font-monospace" name="accountId" required>
+                <option disabled selected th:if="${#lists.isEmpty(accounts)}" value="">No active account found</option>
+                <option th:if="${!#lists.isEmpty(accounts)}" value="">-- Select Account --</option>
+                <option th:each="acc : ${accounts}" th:selected="${acc.id == selectedAccountId}" th:text="${acc.accountNumber}" th:value="${acc.id}"></option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label text-muted fw-semibold small text-uppercase">Transaction Type</label>
+              <select class="form-select bg-light border-0 shadow-none" name="type">
+                <option value="">All Types</option>
+                <option value="CREDIT">Credit</option>
+                <option value="DEBIT">Debit</option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label text-muted fw-semibold small text-uppercase">From Date</label>
+              <input class="form-control bg-light border-0 shadow-none" name="fromDate" type="date" />
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label text-muted fw-semibold small text-uppercase">To Date</label>
+              <input class="form-control bg-light border-0 shadow-none" name="toDate" type="date" />
+            </div>
+
+            <div class="col-md-3">
+              <button class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm py-2" th:disabled="${#lists.isEmpty(accounts)}">
+                <i class="bi bi-filter me-1"></i> Apply Filters
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Transactions Table Card -->
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Timestamp</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Type</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase">Amount</th>
+                  <th class="border-0 px-4 py-3 text-muted small fw-bold text-uppercase text-end">Balance After</th>
+                </tr>
+              </thead>
+              <tbody class="border-top-0">
+                
+                <tr th:each="tx : ${txPage.content}">
+                  <td class="px-4 py-3 text-muted small font-monospace" th:text="${#temporals.format(tx.transactionTime,'dd MMM yyyy, HH:mm')}">Date</td>
+
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill px-3 py-2 fw-semibold"
+                          th:classappend="${tx.type == 'CREDIT'} ? 'bg-success bg-opacity-10 text-success' : 'bg-danger bg-opacity-10 text-danger'"
+                          th:text="${tx.type}">
+                      CREDIT
+                    </span>
+                  </td>
+
+                  <td class="px-4 py-3 fw-bold font-monospace" th:classappend="${tx.type == 'CREDIT'} ? 'text-success' : 'text-danger'">
+                    <span th:text="${tx.type == 'CREDIT'} ? '+ ₹ ' + ${#numbers.formatDecimal(tx.amount, 1, 'COMMA', 2, 'POINT')} : '- ₹ ' + ${#numbers.formatDecimal(tx.amount, 1, 'COMMA', 2, 'POINT')}">₹ 0.00</span>
+                  </td>
+
+                  <td class="px-4 py-3 text-end fw-bold text-dark font-monospace">
+                    ₹ <span th:text="${#numbers.formatDecimal(tx.balanceAfter, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr th:if="${#lists.isEmpty(txPage.content)}">
+                  <td class="text-center py-5" colspan="4">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                      <i class="bi bi-receipt display-5 text-secondary opacity-50"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Transactions Found</h5>
+                    <p class="text-muted mb-0">No records match your selected filter criteria.</p>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination Navigation -->
+      <nav th:if="${txPage.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" th:classappend="${txPage.first} ? 'disabled'">
+            <a class="page-link rounded-start-pill shadow-none" th:href="@{/transactions(page=${txPage.number - 1}, accountId=${selectedAccountId}, type=${param.type}, fromDate=${param.fromDate}, toDate=${param.toDate})}">
+              Previous
+            </a>
+          </li>
+
+          <li class="page-item disabled">
+            <span class="page-link text-muted bg-light px-4">
+              Page <span th:text="${txPage.number + 1}">1</span> of <span th:text="${txPage.totalPages}">1</span>
+            </span>
+          </li>
+
+          <li class="page-item" th:classappend="${txPage.last} ? 'disabled'">
+            <a class="page-link rounded-end-pill shadow-none" th:href="@{/transactions(page=${txPage.number + 1}, accountId=${selectedAccountId}, type=${param.type}, fromDate=${param.fromDate}, toDate=${param.toDate})}">
+              Next
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

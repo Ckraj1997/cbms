@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}"></head>
+
+<body>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+  <div class="main-content">
+    <div class="container-fluid mt-2 px-md-4">
+      
+      <!-- Page Header -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
+        <div class="mb-3 mb-md-0">
+          <h4 class="fw-bold text-dark mb-1">My Beneficiaries</h4>
+          <p class="text-muted small mb-0">Manage your saved payees for quick and secure fund transfers.</p>
+        </div>
+        <a class="btn btn-primary rounded-pill fw-bold shadow-sm px-4" th:href="@{/beneficiaries/add}">
+          <i class="bi bi-person-plus-fill me-1"></i> Add Beneficiary
+        </a>
+      </div>
+
+      <div class="row g-4">
+        
+        <!-- Beneficiary Cards Loop -->
+        <div class="col-md-6 col-xl-4" th:each="b : ${beneficiaries}">
+          <div class="card border-0 shadow-sm rounded-4 hover-scale h-100">
+            <div class="card-body p-4">
+              
+              <!-- Top Row: Icon and Status Badge -->
+              <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                  <i class="bi bi-person-badge fs-5"></i>
+                </div>
+                
+                <span class="badge rounded-pill fw-semibold px-3 py-2" 
+                      th:classappend="${b.status == 'APPROVED'} ? 'bg-success bg-opacity-10 text-success' : (${b.status == 'PENDING'} ? 'bg-warning bg-opacity-10 text-warning-emphasis' : 'bg-danger bg-opacity-10 text-danger')" 
+                      th:text="${b.status}">
+                </span>
+              </div>
+
+              <!-- Middle Row: Payee Details -->
+              <h5 class="fw-bold text-dark mb-1" th:text="${b.beneficiaryName}">Payee Name</h5>
+              <p class="text-muted font-monospace small mb-4" th:text="${b.beneficiaryAccountNumber}">123456789</p>
+
+              <!-- Bottom Row: Bank Info -->
+              <div class="pt-3 border-top d-flex justify-content-between align-items-end">
+                <div>
+                  <p class="text-muted small fw-semibold text-uppercase mb-1">Bank Name</p>
+                  <p class="fw-bold text-dark mb-0" th:text="${b.bankName}">Bank Name</p>
+                </div>
+                <!-- Placeholder for future IFSC implementation -->
+                <div class="text-end opacity-50" title="IFSC Not Implemented Yet">
+                  <i class="bi bi-building fs-5 text-secondary"></i>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="col-12" th:if="${#lists.isEmpty(beneficiaries)}">
+          <div class="card border-0 shadow-sm rounded-4 text-center p-5">
+            <div class="card-body py-5">
+              <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                <i class="bi bi-people display-5 text-secondary opacity-50"></i>
+              </div>
+              <h5 class="fw-bold text-dark">No Beneficiaries Added</h5>
+              <p class="text-muted mb-4">You haven't saved any payees yet. Add one to easily transfer funds without entering details every time.</p>
+              <a class="btn btn-primary rounded-pill fw-medium px-4 shadow-sm" th:href="@{/beneficiaries/add}">Add New Payee</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>
